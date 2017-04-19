@@ -1,25 +1,36 @@
 pipeline {
-  agent {
-    label 'master'
-  }
+  agent none
 
   stages {
     stage('Unit Tests') {
+      agent {
+        label 'apache'
+      }
       steps {
         sh 'ant -f test.xml -v'
         junit 'reports/result.xml'
        }
       }
       stage('build') {
+         agent {
+           label 'apache'
+         }
         steps {
           sh 'ant -f build.xml -v'
         }
      }
      stage('deploy') {
-       steps {
+        agent {
+          label 'apache'
+        }
+        steps {
          sh "cp dist/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/"
         }
-       }
+       } 
+     stage("Running centos") {
+       agent {
+         label 'centos'
+       }  
       }
 
    post {
